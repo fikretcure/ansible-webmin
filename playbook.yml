@@ -2,7 +2,7 @@
 - name: Webmin kurulumu
   hosts: all
   become: true
-  serial: 1   # <-- KRİTİK SATIR
+  serial: 1
 
   tasks:
     - name: Webmin setup scriptini indir (yalnızca yoksa)
