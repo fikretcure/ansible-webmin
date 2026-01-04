@@ -1,0 +1,44 @@
+---
+- name: Webmin kurulumu
+  hosts: all
+  become: true
+  serial: 1   # <-- KRİTİK SATIR
+
+  tasks:
+    - name: Webmin setup scriptini indir (yalnızca yoksa)
+      get_url:
+        url: https://raw.githubusercontent.com/webmin/webmin/master/webmin-setup-repo.sh
+        dest: /tmp/webmin-setup-repo.sh
+        mode: '0755'
+        force: no
+
+    - name: Webmin setup scriptini çalıştır (yalnızca repo yoksa)
+      shell: yes | sh /tmp/webmin-setup-repo.sh
+      register: webmin_output
+
+    - name: Çıktıyı göster
+      debug:
+        var: webmin_output.stdout_lines
+        
+        
+    - name: apt cache'i güncelle
+      apt:
+        update_cache: yes
+
+    - name: Webmin'i kur
+      apt:
+        name: webmin
+        state: present
+        install_recommends: yes
+
+    - name: Webmin servisini başlat ve enable et
+      systemd:
+        name: webmin
+        state: started
+        enabled: yes
+        
+    - name: Playbook sonunda işaret dosyası oluştur
+      file:
+        path: /tmp/ansible_playbook_done
+        state: touch
+
