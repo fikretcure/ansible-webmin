@@ -4,7 +4,21 @@
   become: true
   serial: 1
 
+  vars:
+      webmin_marker: /tmp/ansible_playbook_done
+
   tasks:
+
+    - name: Webmin repo durumu kontrolü
+      stat:
+        path: "{{ webmin_marker }}"
+      register: webmin_repo
+
+    - name: Webmin repo var mı?
+      debug:
+        msg: "Webmin kurulu mu ? => {{ webmin_repo.stat.exists }}"
+
+  
     - name: Webmin setup scriptini indir (yalnızca yoksa)
       get_url:
         url: https://raw.githubusercontent.com/webmin/webmin/master/webmin-setup-repo.sh
